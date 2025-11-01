@@ -38,10 +38,6 @@ The project follows a standard data science pipeline:
 
 5. **Handling Class Imbalance**
    - Corrected the imbalanced dataset (73% 'No' vs. 27% 'Yes') using Random Under-sampling to create a balanced 50/50 training set.
-    <h2>Imbalance data</h2>
-    <img src="unbalanced_dataset.png"/>
-    <h2>balance data</h2>
-    <img src="balanced_dataset.png"/>
 6. **Model Training**
    - Trained three different classification models:
      - Logistic Regression
