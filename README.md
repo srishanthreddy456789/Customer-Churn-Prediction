@@ -65,7 +65,7 @@ The project follows a standard data science pipeline:
 1. Make sure you have all the required libraries installed:
 
     ```
-    pip install pandas numpy matplotlib scikit-learn xgboost
+    pip install pandas numpy matplotlib seaborn scikit-learn xgboost
     ```
 
 2. Place the dataset `WA_Fn-UseC_-Telco-Customer-Churn.csv` in the same directory as the Python script.
