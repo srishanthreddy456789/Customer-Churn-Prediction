@@ -86,3 +86,18 @@ All models performed well, demonstrating a strong ability to distinguish between
 
 This means the model has an 85% chance of correctly identifying which of two random customers (one who will churn, one who won't) is the one who will churn. ROC-AUC Curve Comparison: The closer the line is to the top-left corner, the better the model.
 <img src="ROC-AUC_Curves_Model_Comparison.png"/>
+
+
+## Contributors
+
+- SRISHANTH REDDY NARRA (Reach out: [srishanthreddy456@gmail.com](mailto:srishanthreddy456@gmail.com))
+
+## License
+
+This project is licensed under the Apache License 2.0.
+
+## Let's Collaborate!
+
+Feel free to contribute and improve this project! Your insights and expertise are valuable.
+
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/srishanth-reddy-narra-61a1142a0) [![Instagram](https://img.shields.io/badge/Instagram-%23E4405F.svg?style=for-the-badge&logo=Instaram&logoColor=white)](https://www.instagram.com/srishanth._.reddy/)
