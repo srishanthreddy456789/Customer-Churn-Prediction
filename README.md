@@ -11,10 +11,11 @@ This repository contains the complete Python script (`customer_churn_project.ipy
 
 ## Table of Contents
 
-- Workflow
-- Tech Stack
-- How to Run
-- Model Results
+- [Workflow](#workflow)
+- [Tech Stack](#tech-stack)
+- [How to Run](#how-to-run)
+- [Model Results](#model-results)
+
 
 ---
 
