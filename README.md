@@ -45,14 +45,18 @@ A machine learning project to predict customer churn using structured customer d
 ---
 
 ## Repository Structure
-├── data/ # dataset (optional or sample)
-├── notebooks/ # EDA + experiments
-├── src/ # preprocessing + training scripts
-├── models/ # saved models
-├── app/ # API / inference (optional)
+
+```text
+Customer-Churn-Prediction/
+├── data/                  # dataset (optional or sample)
+├── notebooks/             # EDA + experiments
+├── src/                   # preprocessing + training scripts
+├── models/                # saved models
+├── app/                   # API / inference (optional)
 ├── Dockerfile
 ├── requirements.txt
 └── README.md
+
 
 
 ---
