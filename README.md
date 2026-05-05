@@ -11,6 +11,9 @@ A machine learning project to predict customer churn using structured customer d
 - Deployment-ready with **Docker + AWS (EC2/S3)**
 
 ---
+## SnapShots
+<img src="ROC-AUC_Curves_Model_Comparison.png">
+---
 
 ## Tech Stack
 - **Language:** Python  
