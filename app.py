@@ -242,12 +242,76 @@ CATEGORICAL_FEATURES = [
 #  HELPER FUNCTIONS
 # ════════════════════════════════════════════════════
 
-@st.cache_resource(show_spinner="🔧 Loading model...")
+@st.cache_resource(show_spinner=False)
 def load_model():
-    """Load the trained pipeline from disk. Returns None if not found."""
+    """
+    Load the trained pipeline from disk.
+    If the model file doesn't exist (e.g. first run on Streamlit Cloud),
+    automatically train and save it from the CSV dataset.
+    """
     if os.path.exists(MODEL_PATH):
         return joblib.load(MODEL_PATH)
-    return None
+
+    # ── Auto-train on first launch ──────────────────
+    if not os.path.exists(CSV_PATH):
+        return None  # Dataset missing — nothing we can do
+
+    # Read data directly (avoid calling st.cache_data inside st.cache_resource)
+    import pandas as pd
+    from sklearn.preprocessing import LabelEncoder
+    from sklearn.model_selection import train_test_split
+    from sklearn.preprocessing import StandardScaler, OneHotEncoder
+    from sklearn.compose import ColumnTransformer
+    from sklearn.pipeline import Pipeline
+    from sklearn.utils import shuffle
+    from xgboost import XGBClassifier
+
+    with st.spinner("🚀 First launch: auto-training XGBoost model (~60 sec). Please wait..."):
+        df = pd.read_csv(CSV_PATH)
+        if "customerID" in df.columns:
+            df = df.drop("customerID", axis=1)
+        df["TotalCharges"] = pd.to_numeric(df["TotalCharges"], errors="coerce").fillna(0)
+
+        X = df.drop("Churn", axis=1)
+        y = LabelEncoder().fit_transform(df["Churn"])
+
+        X_train, X_test, y_train, y_test = train_test_split(
+            X, y, test_size=0.2, random_state=42, stratify=y
+        )
+
+        # Balance via random under-sampling
+        df_tr = X_train.copy(); df_tr["Churn"] = y_train
+        majority = df_tr[df_tr.Churn == 0]
+        minority = df_tr[df_tr.Churn == 1]
+        df_bal   = shuffle(
+            pd.concat([majority.sample(n=len(minority), random_state=42), minority]),
+            random_state=42
+        )
+        X_bal = df_bal.drop("Churn", axis=1)
+        y_bal = df_bal["Churn"]
+
+        num_feats = [f for f in NUMERIC_FEATURES if f in X.columns]
+        cat_feats = [c for c in CATEGORICAL_FEATURES if c in X.columns]
+
+        preprocessor = ColumnTransformer([
+            ("num", Pipeline([("scaler", StandardScaler())]), num_feats),
+            ("cat", Pipeline([("ohe",   OneHotEncoder(handle_unknown="ignore", sparse_output=False))]), cat_feats),
+        ], remainder="passthrough")
+
+        pipeline = Pipeline([
+            ("preprocessor", preprocessor),
+            ("classifier",   XGBClassifier(
+                random_state=42, eval_metric="logloss",
+                n_estimators=200, max_depth=5,
+                learning_rate=0.1, subsample=0.8, colsample_bytree=0.8,
+            )),
+        ])
+        pipeline.fit(X_bal, y_bal)
+
+        os.makedirs("models", exist_ok=True)
+        joblib.dump(pipeline, MODEL_PATH)
+
+    return pipeline
 
 
 @st.cache_data(show_spinner="📂 Loading dataset...")
@@ -431,7 +495,8 @@ def tab_predict(model, user_inputs, predict_btn):
                 unsafe_allow_html=True)
 
     if model is None:
-        st.warning("⚠️ Model not found. Go to the **Model Training** tab to train and save it first.")
+        st.error("❌ Dataset `WA_Fn-UseC_-Telco-Customer-Churn.csv` not found. "
+                 "Please make sure the CSV file is in the project root directory.")
         return
 
     if predict_btn:
@@ -586,7 +651,7 @@ def tab_batch(model):
             plt.close(fig)
 
     elif model is None:
-        st.warning("⚠️ Please train the model first in the **Model Training** tab.")
+        st.error("❌ Dataset not found. Please make sure `WA_Fn-UseC_-Telco-Customer-Churn.csv` is in the project root.")
     else:
         # Show sample download
         st.info("💡 Need a sample CSV to test? Use the button below to download a sample from the training dataset.")
@@ -742,7 +807,8 @@ def tab_insights(model, df):
     st.markdown("## 🧠 Model Insights & Performance")
 
     if model is None:
-        st.warning("⚠️ Model not found. Please train the model first.")
+        st.error("❌ Dataset not found — model could not be auto-trained. "
+                 "Please make sure `WA_Fn-UseC_-Telco-Customer-Churn.csv` is in the project root.")
         return
     if df is None:
         st.warning("Dataset not found.")
