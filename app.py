@@ -326,15 +326,17 @@ def train_and_save_model(df):
 
 
 def dark_fig(w=8, h=4):
-    """Return a matplotlib figure with a transparent dark background."""
+    """Return a matplotlib figure with a dark background."""
     fig, ax = plt.subplots(figsize=(w, h))
     fig.patch.set_facecolor("#0f0c29")
     ax.set_facecolor("#1a1730")
+    # Use RGBA tuples (0-1 range) — matplotlib does NOT accept CSS rgba() strings
+    spine_color = (1.0, 1.0, 1.0, 0.1)
     for spine in ax.spines.values():
-        spine.set_edgecolor("rgba(255,255,255,0.1)")
-    ax.tick_params(colors="rgba(255,255,255,0.55)", labelsize=9)
-    ax.xaxis.label.set_color("rgba(255,255,255,0.7)")
-    ax.yaxis.label.set_color("rgba(255,255,255,0.7)")
+        spine.set_edgecolor(spine_color)
+    ax.tick_params(colors="#8888aa", labelsize=9)
+    ax.xaxis.label.set_color("#aaaacc")
+    ax.yaxis.label.set_color("#aaaacc")
     ax.title.set_color("white")
     return fig, ax
 
@@ -577,7 +579,7 @@ def tab_batch(model):
             for bar, val in zip(bars, risk_counts.values):
                 ax.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 5, str(val),
                         ha="center", color="white", fontsize=10, fontweight="bold")
-            ax.set_ylabel("Customer Count", color="rgba(255,255,255,0.7)")
+            ax.set_ylabel("Customer Count", color="#aaaacc")
             ax.set_title("Customers by Churn Risk Level", color="white", fontweight="bold")
             ax.set_facecolor("#1a1730")
             st.pyplot(fig)
